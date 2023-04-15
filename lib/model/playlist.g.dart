@@ -18,7 +18,7 @@ class PlayListSongsAdapter extends TypeAdapter<PlayListSongs> {
     };
     return PlayListSongs(
       playlistName: fields[0] as String?,
-      listPlaylist: fields[1] as List<Songs>?,
+      listPlaylist: (fields[1] as List?)?.cast<Songs>(),
     );
   }
 

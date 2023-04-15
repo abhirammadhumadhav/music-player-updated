@@ -1,6 +1,8 @@
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:my_project/model/songmodel.dart';
+import 'package:my_project/screens/homescreen/homescreen.dart';
 import 'package:my_project/screens/miniplayer/miniplayer.dart';
 import 'package:my_project/model/recentlyPlayed.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -9,16 +11,16 @@ import '../nowplaying/nowplaying.dart';
 
 class Recentlyplayed extends StatefulWidget {
   const Recentlyplayed({super.key});
-  static int? indexnotifier = 0;
-  static ValueNotifier<int> recentScreenIndex =
-      ValueNotifier<int>(indexnotifier!);
+  // static int? indexnotifier = 0;
+  // static ValueNotifier<int> recentScreenIndex =
+  //     ValueNotifier<int>(indexnotifier!);
 
   @override
   State<Recentlyplayed> createState() => _RecentlyplayedState();
 }
 
 class _RecentlyplayedState extends State<Recentlyplayed> {
-  AssetsAudioPlayer player = AssetsAudioPlayer();
+  // AssetsAudioPlayer player = AssetsAudioPlayer();
   List<Audio> resongs = [];
   @override
   void initState() {
@@ -36,11 +38,10 @@ class _RecentlyplayedState extends State<Recentlyplayed> {
   }
 
   Widget build(BuildContext context) {
-    int val = 0;
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 2, 31, 55),
+      backgroundColor: const Color.fromARGB(255, 2, 31, 55),
       body: SafeArea(
           child: Column(
         children: [
@@ -51,33 +52,35 @@ class _RecentlyplayedState extends State<Recentlyplayed> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.arrow_back_ios_new,
                     color: Colors.white,
                   )),
-              SizedBox(
+              const SizedBox(
                 width: 50,
               ),
-              Text(
+              const Text(
                 "RECENTLY PLAYED",
                 style: TextStyle(color: Colors.white),
               )
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
-          ValueListenableBuilder<Box<RecentlyPlayed>>(
+          ValueListenableBuilder(
             valueListenable: recentlyplayedbox.listenable(),
             builder: (context, recentSongs, child) {
-              List<RecentlyPlayed> allReSongs =
+              List allReSongs =
                   recentlyplayedbox.values.toList().reversed.toList();
               if (allReSongs.isEmpty) {
-                return Padding(
+                return const Padding(
                   padding: EdgeInsets.all(15),
                   child: Center(
                     child: Text(
-                        "You haven't played anything ! Try playing something."),
+                      "You haven't played anything ! Try playing something.",
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 );
               } else {
@@ -85,17 +88,17 @@ class _RecentlyplayedState extends State<Recentlyplayed> {
                   child: ListView.separated(
                     itemBuilder: (context, index) {
                       return Padding(
-                        padding: EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(8),
                         child: Container(
                           height: 100,
                           width: double.infinity,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15),
-                            color: Color.fromARGB(255, 22, 22, 22),
+                            color: const Color.fromARGB(255, 22, 22, 22),
                           ),
                           child: ListTile(
                             leading: Padding(
-                              padding: EdgeInsets.all(8),
+                              padding: const EdgeInsets.all(8),
                               child: Container(
                                 height: 80,
                                 width: 80,
@@ -115,17 +118,12 @@ class _RecentlyplayedState extends State<Recentlyplayed> {
                             ),
                             title: InkWell(
                                 onTap: () {
-                                  NowPlaying.nowplayingindex.value =
-                                              index;
-                                          setState(() {
-                                            val = index;
-                                          });
-
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) {
-                                            return NowPlaying();
-                                          }));
+                                  NowPlaying.nowplayingindex.value = index;
+                                  NowPlaying.nowplayingList.value = allReSongs;
+                                  Navigator.of(context).push(
+                                      MaterialPageRoute(builder: (context) {
+                                    return NowPlaying();
+                                  }));
                                 },
                                 child: Expanded(
                                   child: Column(
@@ -134,19 +132,29 @@ class _RecentlyplayedState extends State<Recentlyplayed> {
                                       Text(
                                         allReSongs[index].songname!,
                                         overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(color: Colors.grey),
+                                        style:
+                                            const TextStyle(color: Colors.grey),
                                       ),
                                       Text(
                                         allReSongs[index].artist!,
                                         overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(color: Colors.grey),
+                                        style:
+                                            const TextStyle(color: Colors.grey),
                                       ),
                                     ],
                                   ),
                                 )),
                             trailing: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
+                                onPressed: () {
+                                  Songs song = Songs(
+                                      songname: allReSongs[index].songname,
+                                      artist: allReSongs[index].artist,
+                                      duration: allReSongs[index].duration,
+                                      songurl: allReSongs[index].songurl,
+                                      id: allReSongs[index]);
+                                  showplaylist(context, allReSongs[index].id);
+                                },
+                                icon: const Icon(
                                   Icons.playlist_add,
                                   size: 30,
                                   color: Colors.purple,
@@ -156,7 +164,7 @@ class _RecentlyplayedState extends State<Recentlyplayed> {
                       );
                     },
                     separatorBuilder: (context, index) {
-                      return SizedBox();
+                      return const SizedBox();
                     },
                     itemCount: allReSongs.length,
                   ),

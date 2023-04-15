@@ -1,11 +1,15 @@
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
+import 'package:my_project/model/playlist.dart';
 import 'package:my_project/model/recentlyPlayed.dart';
 import 'package:my_project/screens/miniplayer/miniplayer.dart';
 import 'package:my_project/screens/nowplaying/nowplaying.dart';
-import 'package:my_project/screens/playlist/playlistscreen.dart';
+import 'package:my_project/screens/playlistedScreen/playlistedscreen.dart';
+// import 'package:my_project/screens/playlist/playlistscreen.dart';
 import 'package:my_project/screens/recentlyPlayed/recentlyPlayedscreen.dart';
 import 'package:my_project/screens/settingsScreen/settingsScreen.dart';
+import 'package:my_project/screens/splashscreen/splashscreen.dart';
+
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../model/dbfunction.dart';
@@ -24,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final box = SongBox.getInstance();
   List<Audio> convertAudios = [];
   final AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer.withId('0');
+
   @override
   void initState() {
     List<Songs> dbsongs = box.values.toList();
@@ -43,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
     int val = 0;
     return Scaffold(
         // backgroundColor: const Color.fromARGB(255, 2, 31, 55),
-        backgroundColor: Color(0xFF7d5647),
+        backgroundColor: const Color(0xFF7d5647),
         body: SafeArea(
             child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -105,8 +110,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 130,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            const Text(
+                          children: const [
+                            Text(
                               'ALAN WALKER',
                               style: TextStyle(
                                   color: Colors.white,
@@ -129,8 +134,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 130,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            const Text(
+                          children: const [
+                            Text(
                               'the chain smokers',
                               style: TextStyle(
                                   color: Colors.white,
@@ -153,8 +158,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 130,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            const Text(
+                          children: const [
+                            Text(
                               'A R Rahman',
                               style: TextStyle(
                                   color: Colors.white,
@@ -177,8 +182,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 130,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            const Text(
+                          children: const [
+                            Text(
                               'Shreya Goshal',
                               style: TextStyle(
                                   color: Colors.white,
@@ -201,8 +206,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 130,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            const Text(
+                          children: const [
+                            Text(
                               'Sunburn',
                               style: TextStyle(
                                   color: Colors.white,
@@ -225,8 +230,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 130,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            const Text(
+                          children: const [
+                            Text(
                               'Psy Trance',
                               style: TextStyle(
                                   color: Colors.white,
@@ -249,8 +254,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 130,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            const Text(
+                          children: const [
+                            Text(
                               'Wiz Khalifa',
                               style: TextStyle(
                                   color: Colors.white,
@@ -276,7 +281,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.only(left: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
+                  children: const [
                     Text(
                       'For you',
                       style: TextStyle(
@@ -284,7 +289,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontSize: 20,
                           color: Colors.grey),
                     ),
-                    const Icon(
+                    Icon(
                       Icons.play_circle_filled,
                       size: 40,
                       color: Colors.purple,
@@ -329,14 +334,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                           borderRadius:
                                               BorderRadius.circular(0),
                                         ),
-                                        child: QueryArtworkWidget(
-                                          id: allSongs[index].id!,
-                                          type: ArtworkType.AUDIO,
-                                          nullArtworkWidget: CircleAvatar(
-                                            radius: 50,
-                                            child: Image.asset(
-                                              'lib/assets/images/home-page-filipwolak-cirkiz-33311.webp',
-                                              height: 100,
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                          child: QueryArtworkWidget(
+                                            id: allSongs[index].id!,
+                                            type: ArtworkType.AUDIO,
+                                            artworkFit: BoxFit.cover,
+                                            nullArtworkWidget: CircleAvatar(
+                                              radius: 20,
+                                              child: Image.asset(
+                                                'lib/assets/images/home-page-filipwolak-cirkiz-33311.webp',
+                                                height: 100,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -348,7 +358,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     children: [
                                       InkWell(
                                         onTap: () {
-                                          RecentlyPlayed song = RecentlyPlayed( 
+                                          // MiniPlayer.miniNotifier.value = index;
+                                          RecentlyPlayed song = RecentlyPlayed(
                                               songname:
                                                   allSongs[index].songname!,
                                               artist: allSongs[index].artist!,
@@ -359,6 +370,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           updaterecentlyplayed(song);
                                           NowPlaying.nowplayingindex.value =
                                               index;
+                                          NowPlaying.nowplayingList.value =
+                                              allSongs;
                                           setState(() {
                                             val = index;
                                           });
@@ -366,7 +379,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           Navigator.of(context).push(
                                               MaterialPageRoute(
                                                   builder: (context) {
-                                            return NowPlaying();
+                                            return const NowPlaying();
                                           }));
                                         },
                                         child: Text(
@@ -386,11 +399,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   trailing: IconButton(
                                       onPressed: () {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) {
-                                          return const PlaylistScreen();
-                                        }));
+                                        //  playlistAlertBox(
+                                        //      context, TextEditingController());
+                                        // Navigator.of(context).push(
+                                        //     MaterialPageRoute(
+                                        //         builder: (context) {
+                                        //   return const PlaylistScreen();
+                                        // }));
+                                        showplaylist(context, allSongs[index]);
                                       },
                                       icon: const Icon(
                                         Icons.playlist_add,
@@ -415,4 +431,50 @@ class _HomeScreenState extends State<HomeScreen> {
         )),
         floatingActionButton: const MiniPlayer());
   }
+}
+
+showplaylist(
+  BuildContext context,
+  Songs song,
+) {
+  return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Your Playlists'),
+          content: ValueListenableBuilder(
+              valueListenable: Playlistbox.getInstance().listenable(),
+              builder: (context, playListbox, child) {
+                final listplaylist = Playlistbox.getInstance().values.toList();
+                return listplaylist.isEmpty
+                    ? const Text("You have no Playlist")
+                    : SizedBox(
+                        height: 200,
+                        child: ListView.separated(
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                onTap: () {
+                                  checkLogin(context);
+                                  AddToPlaylist(index, song);
+                                  Navigator.of(context).pop();
+                                },
+                                title: Text(
+                                  listplaylist[index].playlistName!,
+                                  style: const TextStyle(color: Colors.black),
+                                ),
+                              );
+                            },
+                            separatorBuilder: (context, index) {
+                              return const SizedBox();
+                            },
+                            itemCount: listplaylist.length),
+                      );
+              }),
+        );
+      });
+}
+
+void checkLogin(BuildContext context) {
+  ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Center(child: Text('add to playlist'))));
 }
