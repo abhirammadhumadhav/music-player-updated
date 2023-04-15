@@ -146,12 +146,6 @@ class _RecentlyplayedState extends State<Recentlyplayed> {
                                 )),
                             trailing: IconButton(
                                 onPressed: () {
-                                  Songs song = Songs(
-                                      songname: allReSongs[index].songname,
-                                      artist: allReSongs[index].artist,
-                                      duration: allReSongs[index].duration,
-                                      songurl: allReSongs[index].songurl,
-                                      id: allReSongs[index]);
                                   showplaylist(context, allReSongs[index].id);
                                 },
                                 icon: const Icon(
