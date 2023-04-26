@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:my_project/model/likedSongs.dart';
+import 'package:my_project/model/mostlyplayed.dart';
 import 'package:my_project/model/playlist.dart';
 import 'package:my_project/model/recentlyPlayed.dart';
 import 'package:my_project/screens/splashscreen/splashscreen.dart';
@@ -24,6 +25,8 @@ Future<void> main() async {
   await Hive.openBox<PlayListSongs>(playlistboxname);
   playlistDb();
   runApp(const MyApp());
+  Hive.registerAdapter(MostlyplayedAdapter());
+  await Hive.openBox(mostlyplayedboxname);
 }
 
 class MyApp extends StatefulWidget {

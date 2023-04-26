@@ -1,4 +1,4 @@
-import 'dart:developer';
+// import 'dart:developer';
 
 import 'package:hive/hive.dart';
 import 'package:my_project/model/playlist.dart';
@@ -6,6 +6,7 @@ import 'package:my_project/model/recentlyPlayed.dart';
 import 'package:my_project/model/songmodel.dart';
 
 import 'likedSongs.dart';
+import 'mostlyplayed.dart';
 // import 'package:my_project/screens/recentlyPlayed/recentlyPlayedscreen.dart';
 
 late Box<RecentlyPlayed> recentlyplayedbox;
@@ -81,4 +82,47 @@ AddToPlaylist(index, Songs songs) {
   if (isAlready == false) {
     playlistsongs.add(songs);
   }
+}
+
+late Box mostlyplayedsongbox;
+mostlyplayedDb() async {
+  mostlyplayedsongbox = await Hive.openBox('mostlyplayedsongs');
+}
+
+void checkmostplayed(List<dynamic> songList, int index) {
+  List mostlyplayed = Mostlyplaybox.getInstance().values.toList();
+  final isAlready = mostlyplayed
+      .where((element) => element.id == songList[index].id)
+      .isNotEmpty;
+  if (!isAlready) {
+    Mostlyplaybox.getInstance().add(Mostlyplayed(
+      id: songList[index].id,
+      count: 0,
+    ));
+  } else {
+    int newIndex =
+        mostlyplayed.indexWhere((element) => element.id == songList[index].id);
+    int increment = mostlyplayed[newIndex].count;
+    increment = increment + 1;
+    mostlyplayed[newIndex].count = increment;
+  }
+}
+
+List displayMostlyPlayed() {
+  List songs = Mostlyplaybox.getInstance().values.toList();
+  songs.sort(
+    (a, b) => a.count.compareTo(b.count),
+  );
+  List allmostSongs = songs.reversed.toList().take(10).toList();
+  List<Songs> allDbSongs = SongBox.getInstance().values.toList();
+  List<Songs> songsFromdb = [];
+  for (int i = 0; i < allmostSongs.length; i++) {
+    int index =
+        allDbSongs.indexWhere((element) => element.id == allmostSongs[i].id);
+    if (!songsFromdb.contains(allDbSongs[index])) {
+      songsFromdb.add(allDbSongs[index]);
+    }
+  }
+
+  return songsFromdb;
 }

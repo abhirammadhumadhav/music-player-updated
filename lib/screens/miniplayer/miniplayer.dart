@@ -4,16 +4,18 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/src/widgets/container.dart';
 // import 'package:flutter/src/widgets/framework.dart';
-import 'package:hive_flutter/adapters.dart';
+// import 'package:hive_flutter/adapters.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
+import '../../model/dbfunction.dart';
+import '../../model/recentlyPlayed.dart';
 import '../../model/songmodel.dart';
 import '../nowplaying/nowplaying.dart';
 
 class MiniPlayer extends StatefulWidget {
   const MiniPlayer({super.key});
-  // static int? miniplayerindex = 0;
-  // static ValueNotifier<int> miniNotifier = ValueNotifier<int>(miniplayerindex!);
+  static int? miniplayerindex = 0;
+  static ValueNotifier<int> miniNotifier = ValueNotifier<int>(miniplayerindex!);
 
   @override
   State<MiniPlayer> createState() => _MiniPlayerState();
@@ -22,27 +24,29 @@ class MiniPlayer extends StatefulWidget {
 class _MiniPlayerState extends State<MiniPlayer>
     with SingleTickerProviderStateMixin {
   late AnimationController iconController;
-  bool isAnimated = true;
+
   // bool isPlaying = false;
-  AssetsAudioPlayer player = AssetsAudioPlayer();
+  AssetsAudioPlayer player = AssetsAudioPlayer.withId('0');
 
   final box = SongBox.getInstance();
 
   @override
   void initState() {
-    // List<Songs> dbSongs = box.values.toList();
-    //  if (!player.isPlaying.value) {
-    // iconController.forward();
-    //   } else {
-    //   iconController.reverse();
-    // }
+    List<Songs> dbSongs = box.values.toList();
     iconController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 100));
+    // if (!player.isPlaying.value) {
+    //   iconController.forward();
+    // } else {
+    //   iconController.reverse();
+    // }
 
     super.initState();
   }
 
+  @override
   Widget build(BuildContext context) {
+    bool isAnimated = false;
     // int val = 0;
     return ValueListenableBuilder(
         valueListenable: NowPlaying.nowplayingindex,
@@ -50,7 +54,16 @@ class _MiniPlayerState extends State<MiniPlayer>
           return ValueListenableBuilder(
               valueListenable: NowPlaying.nowplayingList,
               builder: (context, allDbsongs, child) {
-                List all = allDbsongs;
+                List all = [];
+                // if (!player.isPlaying.value) {
+                //   return const SizedBox();
+                // }
+                if (allDbsongs.isEmpty) {
+                  log(box.values.toList().toString());
+                } else {
+                  all = allDbsongs;
+                }
+
                 //  val = NowPlaying.nowplayingindex.value;
                 return Container(
                   margin: const EdgeInsets.only(left: 20),
@@ -58,8 +71,13 @@ class _MiniPlayerState extends State<MiniPlayer>
                   height: 60,
                   child: FloatingActionButton(
                       onPressed: () {
-                        // NowPlaying.nowplayingindex.value = value;
-                        // NowPlaying.nowplayingList.value = value;
+                        RecentlyPlayed songslst = RecentlyPlayed(
+                            songname: all[value].songname,
+                            artist: all[value].artist,
+                            duration: int.parse(all[value].duration),
+                            songurl: all[value].songurl,
+                            id: all[value].id);
+                        updaterecentlyplayed(songslst);
                         Navigator.of(context)
                             .push(MaterialPageRoute(builder: (context) {
                           return const NowPlaying();
@@ -84,7 +102,6 @@ class _MiniPlayerState extends State<MiniPlayer>
                             ),
                           ),
 
-                          // SizedBox(width: 40,),
                           SizedBox(
                               width: 100,
                               child: Text(
@@ -104,7 +121,7 @@ class _MiniPlayerState extends State<MiniPlayer>
                                   // AnimateIcon(player, value, all);
                                   setState(() {
                                     NowPlaying.nowplayingindex.value--;
-                                    // MiniPlayer.miniNotifier.value--;
+                                    MiniPlayer.miniNotifier.value--;
                                   });
                                   iconController.forward();
                                   isAnimated = true;
@@ -130,16 +147,22 @@ class _MiniPlayerState extends State<MiniPlayer>
                                 return IconButton(
                                     onPressed: () {
                                       setState(() {
-                                        if (isAnimated) {
+                                        if (player.isPlaying.value) {
                                           iconController.reverse();
                                           player.pause();
-                                          isAnimated = false;
+                                          //isAnimated = true;
                                         } else {
                                           iconController.forward();
                                           player.play();
-                                          isAnimated = true;
+                                          //isAnimated = false;
                                         }
                                       });
+                                      // NowPlaying.nowplayingindex.value = value;
+                                      // NowPlaying.nowplayingList.value = all;
+                                      // Navigator.of(context).push(
+                                      //     MaterialPageRoute(builder: (context) {
+                                      //   return NowPlaying();
+                                      // }));
                                     },
                                     icon: AnimatedIcon(
                                         icon: AnimatedIcons.play_pause,
@@ -170,10 +193,10 @@ class _MiniPlayerState extends State<MiniPlayer>
                                 await player.play();
                                 setState(() {
                                   NowPlaying.nowplayingindex.value++;
-                                  // MiniPlayer.miniNotifier.value++;
+                                  MiniPlayer.miniNotifier.value++;
                                 });
                                 iconController.forward();
-                                isAnimated = true;
+                                // isAnimated = true;
                               },
                               icon: const Icon(
                                 Icons.fast_forward,
@@ -187,21 +210,21 @@ class _MiniPlayerState extends State<MiniPlayer>
         });
   }
 
-  AnimateIcon(AssetsAudioPlayer player, int index, List<Songs> dbsongs) {
-    //  setState(() {
-    isAnimated = !isAnimated;
-    if (!player.isPlaying.value) {
-      log(player.isPlaying.value.toString());
-      iconController.forward();
-      //  ()async {
-      // player.open(Audio.file(dbsongs[index].songurl!), showNotification: true);
-      // await player.stop();};
-      player.play();
-    } else {
-      log(player.isPlaying.value.toString());
-      iconController.reverse();
-      player.pause();
-    }
-    // });
-  }
+  // AnimateIcon(AssetsAudioPlayer player, int index, List<Songs> dbsongs) {
+  //   //  setState(() {
+  //   // isAnimated = !isAnimated;
+  //   if (!player.isPlaying.value) {
+  //     log(player.isPlaying.value.toString());
+  //     iconController.forward();
+  //     //  ()async {
+  //     // player.open(Audio.file(dbsongs[index].songurl!), showNotification: true);
+  //     // await player.stop();};
+  //     player.play();
+  //   } else {
+  //     log(player.isPlaying.value.toString());
+  //     iconController.reverse();
+  //     player.pause();
+  //   }
+  //   // });
+  // }
 }

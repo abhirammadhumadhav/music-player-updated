@@ -5,6 +5,7 @@ import 'package:my_project/model/songmodel.dart';
 import 'package:my_project/screens/homescreen/homescreen.dart';
 import 'package:my_project/screens/miniplayer/miniplayer.dart';
 import 'package:my_project/model/recentlyPlayed.dart';
+import 'package:my_project/screens/splashscreen/splashscreen.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import '../../model/dbfunction.dart';
 import '../nowplaying/nowplaying.dart';
@@ -20,8 +21,11 @@ class Recentlyplayed extends StatefulWidget {
 }
 
 class _RecentlyplayedState extends State<Recentlyplayed> {
+  // List<Songs> allReSongs = SongBox.getInstance().values.toList();
+
   // AssetsAudioPlayer player = AssetsAudioPlayer();
   List<Audio> resongs = [];
+
   @override
   void initState() {
     List<RecentlyPlayed> rdbsongs =
@@ -71,8 +75,9 @@ class _RecentlyplayedState extends State<Recentlyplayed> {
           ValueListenableBuilder(
             valueListenable: recentlyplayedbox.listenable(),
             builder: (context, recentSongs, child) {
-              List allReSongs =
+              List<RecentlyPlayed> allReSongs =
                   recentlyplayedbox.values.toList().reversed.toList();
+
               if (allReSongs.isEmpty) {
                 return const Padding(
                   padding: EdgeInsets.all(15),
@@ -84,91 +89,115 @@ class _RecentlyplayedState extends State<Recentlyplayed> {
                   ),
                 );
               } else {
-                return Expanded(
-                  child: ListView.separated(
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Container(
-                          height: 100,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: const Color.fromARGB(255, 22, 22, 22),
-                          ),
-                          child: ListTile(
-                            leading: Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Container(
-                                height: 80,
-                                width: 80,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15)),
-                                  child: QueryArtworkWidget(
-                                    id: allReSongs[index].id!,
-                                    type: ArtworkType.AUDIO,
-                                    nullArtworkWidget: Image.asset(
-                                      'lib/assets/images/home-page-filipwolak-cirkiz-33311.webp',
-                                      height: 200,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            title: InkWell(
-                                onTap: () {
-                                  NowPlaying.nowplayingindex.value = index;
-                                  NowPlaying.nowplayingList.value = allReSongs;
-                                  Navigator.of(context).push(
-                                      MaterialPageRoute(builder: (context) {
-                                    return NowPlaying();
-                                  }));
-                                },
-                                child: Expanded(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        allReSongs[index].songname!,
-                                        overflow: TextOverflow.ellipsis,
-                                        style:
-                                            const TextStyle(color: Colors.grey),
-                                      ),
-                                      Text(
-                                        allReSongs[index].artist!,
-                                        overflow: TextOverflow.ellipsis,
-                                        style:
-                                            const TextStyle(color: Colors.grey),
-                                      ),
-                                    ],
-                                  ),
-                                )),
-                            trailing: IconButton(
-                                onPressed: () {
-                                  showplaylist(context, allReSongs[index].id);
-                                },
-                                icon: const Icon(
-                                  Icons.playlist_add,
-                                  size: 30,
-                                  color: Colors.purple,
-                                )),
-                          ),
-                        ),
-                      );
-                    },
-                    separatorBuilder: (context, index) {
-                      return const SizedBox();
-                    },
-                    itemCount: allReSongs.length,
-                  ),
-                );
+                return SongListWidget(allReSongs: allReSongs);
               }
             },
           ),
         ],
       )),
       // floatingActionButton: MiniPlayer(),
+    );
+  }
+}
+
+class SongListWidget extends StatelessWidget {
+  const SongListWidget({
+    super.key,
+    required this.allReSongs,
+  });
+
+  final List<dynamic> allReSongs;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: ListView.separated(
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.all(8),
+            child: Container(
+              height: 70,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: const Color.fromARGB(255, 22, 22, 22),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ListTile(
+                  leading: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: QueryArtworkWidget(
+                        id: allReSongs[index].id!,
+                        type: ArtworkType.AUDIO,
+                        artworkFit: BoxFit.cover,
+                        nullArtworkWidget: ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: Image.asset(
+                            'lib/assets/images/home-page-filipwolak-cirkiz-33311.webp',
+                            height: 200,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  title: InkWell(
+                      onTap: () {
+                        NowPlaying.nowplayingindex.value = index;
+                        NowPlaying.nowplayingList.value = allReSongs;
+
+                        RecentlyPlayed songs = RecentlyPlayed(
+                            songname: allReSongs[index].songname!,
+                            artist: allReSongs[index].artist!,
+                            duration: int.parse(
+                                allReSongs[index].duration.toString()),
+                            songurl: allReSongs[index].songurl!,
+                            id: allReSongs[index].id);
+                        updaterecentlyplayed(songs);
+
+                        Navigator.of(context)
+                            .push(MaterialPageRoute(builder: (context) {
+                          return const NowPlaying();
+                        }));
+                      },
+                      child: Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              allReSongs[index].songname!,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(color: Colors.grey),
+                            ),
+                            Text(
+                              allReSongs[index].artist!,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                      )),
+                  // trailing: IconButton(
+                  //     onPressed: () {
+                  //       // showplaylist(context, allReSongs[index]);
+                  //     },
+                  //     icon: const Icon(
+                  //       Icons.playlist_add,
+                  //       size: 30,
+                  //       color: Colors.purple,
+                  //     )),
+                ),
+              ),
+            ),
+          );
+        },
+        separatorBuilder: (context, index) {
+          return const SizedBox();
+        },
+        itemCount: allReSongs.length,
+      ),
     );
   }
 }

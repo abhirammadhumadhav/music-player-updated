@@ -1,12 +1,11 @@
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:my_project/model/dbfunction.dart';
 import 'package:my_project/model/likedSongs.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
+import '../../model/recentlyPlayed.dart';
 import '../nowplaying/nowplaying.dart';
 
 class LikedScreen extends StatefulWidget {
@@ -33,14 +32,14 @@ class _LikedScreenState extends State<LikedScreen> {
             id: item.id.toString(),
           )));
     }
-    // TODO: implement initState
+
     super.initState();
   }
 
   Widget build(BuildContext context) {
     int val = 0;
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 2, 31, 55),
+      backgroundColor: const Color.fromARGB(255, 2, 31, 55),
       body: SafeArea(
           child: Column(
         children: [
@@ -51,14 +50,14 @@ class _LikedScreenState extends State<LikedScreen> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.arrow_back_ios_new,
                     color: Colors.white,
                   )),
-              SizedBox(
+              const SizedBox(
                 width: 50,
               ),
-              Text(
+              const Text(
                 'Liked Songs',
                 style: TextStyle(
                     fontSize: 25,
@@ -67,7 +66,7 @@ class _LikedScreenState extends State<LikedScreen> {
               )
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 50,
           ),
           ValueListenableBuilder(
@@ -75,7 +74,7 @@ class _LikedScreenState extends State<LikedScreen> {
               builder: (context, songliked, child) {
                 List<LikedSongs> favSong = likedsongbox.values.toList();
                 if (favSong.isEmpty) {
-                  return Padding(
+                  return const Padding(
                     padding: EdgeInsets.all(15),
                     child: Center(
                       child: Text(
@@ -89,28 +88,25 @@ class _LikedScreenState extends State<LikedScreen> {
                     child: ListView.separated(
                       itemBuilder: (context, index) {
                         return Padding(
-                          padding: EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
                           child: Container(
-                            height: 100,
+                            height: 70,
                             width: double.infinity,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
-                              color: Color.fromARGB(255, 22, 22, 22),
+                              color: const Color.fromARGB(255, 22, 22, 22),
                             ),
                             child: ListTile(
                               leading: Padding(
-                                padding: EdgeInsets.all(8),
-                                child: Container(
-                                  height: 80,
-                                  width: 80,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(15)),
-                                    child: QueryArtworkWidget(
-                                      id: favSong[index].id!,
-                                      type: ArtworkType.AUDIO,
-                                      nullArtworkWidget: Image.asset(
+                                padding: const EdgeInsets.only(bottom: 20),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(15),
+                                  child: QueryArtworkWidget(
+                                    id: favSong[index].id!,
+                                    type: ArtworkType.AUDIO,
+                                    artworkFit: BoxFit.cover,
+                                    nullArtworkWidget: ClipRect(
+                                      child: Image.asset(
                                         'lib/assets/images/home-page-filipwolak-cirkiz-33311.webp',
                                         height: 200,
                                       ),
@@ -122,10 +118,18 @@ class _LikedScreenState extends State<LikedScreen> {
                                   onTap: () {
                                     NowPlaying.nowplayingindex.value = index;
                                     NowPlaying.nowplayingList.value = favSong;
+                                    RecentlyPlayed songslst = RecentlyPlayed(
+                                        songname: favSong[index].songname,
+                                        artist: favSong[index].artist,
+                                        duration: int.parse(
+                                            favSong[index].duration.toString()),
+                                        songurl: favSong[index].songurl,
+                                        id: favSong[index].id);
+                                    updaterecentlyplayed(songslst);
 
                                     Navigator.of(context).push(
                                         MaterialPageRoute(builder: (context) {
-                                      return NowPlaying();
+                                      return const NowPlaying();
                                     }));
                                   },
                                   child: Expanded(
@@ -136,12 +140,14 @@ class _LikedScreenState extends State<LikedScreen> {
                                         Text(
                                           favSong[index].songname!,
                                           overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(color: Colors.grey),
+                                          style: const TextStyle(
+                                              color: Colors.grey),
                                         ),
                                         Text(
                                           favSong[index].artist!,
                                           overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(color: Colors.grey),
+                                          style: const TextStyle(
+                                              color: Colors.grey),
                                         ),
                                       ],
                                     ),
@@ -150,7 +156,7 @@ class _LikedScreenState extends State<LikedScreen> {
                                   onPressed: () {
                                     likedsongbox.deleteAt(index);
                                   },
-                                  icon: Icon(
+                                  icon: const Icon(
                                     Icons.remove_circle,
                                     size: 30,
                                     color: Colors.red,
@@ -160,7 +166,7 @@ class _LikedScreenState extends State<LikedScreen> {
                         );
                       },
                       separatorBuilder: (context, index) {
-                        return SizedBox();
+                        return const SizedBox();
                       },
                       itemCount: favSong.length,
                     ),

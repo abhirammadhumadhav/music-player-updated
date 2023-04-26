@@ -5,6 +5,9 @@ import 'package:my_project/screens/homescreen/homescreen.dart';
 import 'package:my_project/screens/miniplayer/miniplayer.dart';
 import 'package:my_project/screens/nowplaying/nowplaying.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+
+import '../../model/dbfunction.dart';
+import '../../model/recentlyPlayed.dart';
 // import 'package:flutter/src/widgets/container.dart';
 // import 'package:flutter/src/widgets/framework.dart';
 
@@ -28,9 +31,17 @@ class _searchscreenState extends State<searchscreen> {
                     onTap: () {
                       NowPlaying.nowplayingindex.value = index;
                       NowPlaying.nowplayingList.value = SongDisplay;
+                      RecentlyPlayed songslst = RecentlyPlayed(
+                          songname: SongDisplay[index].songname,
+                          artist: SongDisplay[index].artist,
+                          duration:
+                              int.parse(SongDisplay[index].duration.toString()),
+                          songurl: SongDisplay[index].songurl,
+                          id: SongDisplay[index].id);
+                      updaterecentlyplayed(songslst);
                       Navigator.of(context)
                           .push(MaterialPageRoute(builder: (context) {
-                        return NowPlaying();
+                        return const NowPlaying();
                       }));
                     },
                     leading: CircleAvatar(
@@ -52,13 +63,13 @@ class _searchscreenState extends State<searchscreen> {
                     subtitle: Text(
                       SongDisplay[index].artist!,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                     trailing: IconButton(
                         onPressed: () {
                           showplaylist(context, SongDisplay[index]);
                         },
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.playlist_add,
                           color: Colors.purple,
                         )),

@@ -6,6 +6,7 @@ import 'package:my_project/screens/aboutUs/aboutUs.dart';
 import 'package:my_project/screens/accounts/accounts.dart';
 import 'package:my_project/screens/privacyPolicy/privacyPolicy.dart';
 import 'package:my_project/screens/termsandcondition/terms.dart';
+import 'package:share_plus/share_plus.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -52,18 +53,45 @@ class SettingsScreen extends StatelessWidget {
           const SizedBox(
             height: 25,
           ),
+          // InkWell(
+          //   onTap: () {
+          //     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+          //       return const AccountScreen();
+          //     }));
+          //   },
+          //   child: Row(
+          //     children: [
+          //       IconButton(
+          //           onPressed: () {},
+          //           icon: const Icon(
+          //             Icons.manage_accounts,
+          //             size: 30,
+          //             color: Colors.purple,
+          //           )),
+          //       const SizedBox(
+          //         width: 20,
+          //       ),
+          //       const Text(
+          //         'Account',
+          //         style: TextStyle(
+          //             fontWeight: FontWeight.bold,
+          //             fontSize: 25,
+          //             color: Colors.grey),
+          //       )
+          //     ],
+          //   ),
+          // ),
           InkWell(
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return const AccountScreen();
-              }));
+              Share.share(
+                  "https://github.com/abhirammadhumadhav/music-player-updated");
             },
             child: Row(
               children: [
                 IconButton(
                     onPressed: () {},
                     icon: const Icon(
-                      Icons.manage_accounts,
+                      Icons.share,
                       size: 30,
                       color: Colors.purple,
                     )),
@@ -71,7 +99,7 @@ class SettingsScreen extends StatelessWidget {
                   width: 20,
                 ),
                 const Text(
-                  'Account',
+                  'Shareapp',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 25,
@@ -79,27 +107,6 @@ class SettingsScreen extends StatelessWidget {
                 )
               ],
             ),
-          ),
-          Row(
-            children: [
-              IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.share,
-                    size: 30,
-                    color: Colors.purple,
-                  )),
-              const SizedBox(
-                width: 20,
-              ),
-              const Text(
-                'Shareapp',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 25,
-                    color: Colors.grey),
-              )
-            ],
           ),
           InkWell(
             onTap: () {

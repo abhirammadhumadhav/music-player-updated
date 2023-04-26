@@ -1,19 +1,12 @@
-import 'dart:developer';
-
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:my_project/model/dbfunction.dart';
 import 'package:my_project/model/likedSongs.dart';
 import 'package:my_project/model/songmodel.dart';
 import 'package:my_project/screens/homescreen/homescreen.dart';
 import 'package:my_project/screens/likedsongs/likedsongs.dart';
-import 'package:my_project/screens/splashscreen/splashscreen.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-
 import '../miniplayer/miniplayer.dart';
 
 class NowPlaying extends StatefulWidget {
@@ -34,15 +27,18 @@ class _NowPlayingState extends State<NowPlaying>
   Duration position = Duration.zero;
   late AnimationController iconController;
   late List<Songs> dbSongs;
+  bool isButtonPressed = false;
+  Color buttoncolor = Colors.grey;
   bool isRepeat = false;
+  bool isShuffle = false;
   bool isplaying = false;
-  bool isAnimated = false;
+  bool isAnimated = true;
   bool showPlay = true;
   bool showPause = false;
   bool isLiked = false;
   final box = SongBox.getInstance();
 
-  AssetsAudioPlayer player = AssetsAudioPlayer();
+  AssetsAudioPlayer player = AssetsAudioPlayer.withId('0');
 // double _songposition=0;
 
   @override
@@ -75,8 +71,6 @@ class _NowPlayingState extends State<NowPlaying>
           builder: ((context, allSongs, child) {
             List allDbSongs = allSongs;
 
-            // log(allDbSongs[value].songname!);
-
             return Scaffold(
               backgroundColor: const Color.fromARGB(255, 2, 31, 55),
               body: SafeArea(
@@ -87,6 +81,7 @@ class _NowPlayingState extends State<NowPlaying>
                     children: [
                       IconButton(
                           onPressed: () {
+                            //   setState(() {});
                             Navigator.of(context).pop();
                           },
                           icon: const Icon(
@@ -177,35 +172,60 @@ class _NowPlayingState extends State<NowPlaying>
                     padding: const EdgeInsets.only(left: 30, right: 30),
                     width: double.infinity,
                     child: PlayerBuilder.realtimePlayingInfos(
-                        player: player,
-                        builder: (context, RealtimePlayingInfos) {
-                          final duration =
-                              RealtimePlayingInfos.current!.audio.duration;
-                          final position = RealtimePlayingInfos.currentPosition;
-                          return ProgressBar(
-                              progress: position,
-                              progressBarColor: Colors.purple,
-                              timeLabelTextStyle:
-                                  const TextStyle(color: Colors.white),
-                              onSeek: (duration) async {
-                                await player.seek(duration);
-                              },
-                              total: duration);
-                        }),
+                      player: player,
+                      builder: (context, RealtimePlayingInfos) {
+                        final current = RealtimePlayingInfos.current;
+                        if (current == null) {
+                          return const SizedBox(); // Or show a loading/error widget
+                        }
+                        final duration = current.audio.duration;
+                        final position = RealtimePlayingInfos.currentPosition;
+                        return ProgressBar(
+                          progress: position,
+                          progressBarColor: Colors.purple,
+                          timeLabelTextStyle:
+                              const TextStyle(color: Colors.white),
+                          onSeek: (Duration? duration) async {
+                            if (duration != null) {
+                              await player.seek(duration);
+                            }
+                          },
+                          total: duration,
+                        );
+                      },
+                    ),
                   ),
                   const SizedBox(
                     height: 130,
                   ),
                   Row(
                     children: [
-                      IconButton(
-                          onPressed: () {
-                            setState(() {});
-                          },
-                          icon: const Icon(
-                            Icons.repeat,
-                            color: Colors.grey,
-                          )),
+                      PlayerBuilder.isPlaying(
+                          player: player,
+                          builder: (context, isplaying) {
+                            return IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  if (isRepeat) {
+                                    player.setLoopMode(LoopMode.none);
+                                    isRepeat = false;
+                                  } else {
+                                    player.setLoopMode(LoopMode.single);
+                                    isRepeat = true;
+                                  }
+                                  isButtonPressed = !isButtonPressed;
+                                  buttoncolor = isButtonPressed
+                                      ? Colors.green
+                                      : Colors.red;
+                                });
+                              },
+                              icon: const Icon(
+                                Icons.repeat_on_rounded,
+                                color: Colors.grey,
+                              ),
+                              color: buttoncolor,
+                            );
+                          }),
                       const SizedBox(
                         width: 50,
                       ),
@@ -220,7 +240,7 @@ class _NowPlayingState extends State<NowPlaying>
                                       showNotification: true);
                                   setState(() {
                                     NowPlaying.nowplayingindex.value--;
-                                    //MiniPlayer.miniNotifier.value--;
+                                    MiniPlayer.miniNotifier.value--;
                                   });
                                   iconController.forward();
                                   await player.stop();
@@ -233,16 +253,35 @@ class _NowPlayingState extends State<NowPlaying>
                       const SizedBox(
                         width: 10,
                       ),
-                      IconButton(
-                          onPressed: () {
-                            AnimateIcon(player, value, allDbSongs);
-                          },
-                          icon: AnimatedIcon(
-                            icon: AnimatedIcons.play_pause,
-                            progress: iconController,
-                            size: 35,
-                            color: Colors.purple,
-                          )),
+                      PlayerBuilder.isPlaying(
+                          player: player,
+                          builder: (context, isPlaying) {
+                            if (player.isPlaying.value) {
+                              iconController.forward();
+                            } else {
+                              iconController.reverse();
+                            }
+                            return IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    if (isAnimated) {
+                                      iconController.reverse();
+                                      player.pause();
+                                      isAnimated = false;
+                                    } else {
+                                      iconController.forward();
+                                      player.play();
+                                      isAnimated = true;
+                                    }
+                                  });
+                                },
+                                icon: AnimatedIcon(
+                                  icon: AnimatedIcons.play_pause,
+                                  progress: iconController,
+                                  size: 35,
+                                  color: Colors.purple,
+                                ));
+                          }),
                       const SizedBox(
                         width: 10,
                       ),
@@ -256,9 +295,8 @@ class _NowPlayingState extends State<NowPlaying>
                                           allDbSongs[value + 1].songurl!),
                                       showNotification: true);
                                   setState(() {
-                                    // AnimateIcon(player, value, allDbSongs);
                                     NowPlaying.nowplayingindex.value++;
-                                    //  MiniPlayer.miniNotifier.value++;
+                                    MiniPlayer.miniNotifier.value++;
                                   });
                                   iconController.forward();
                                   await player.stop();
@@ -272,7 +310,12 @@ class _NowPlayingState extends State<NowPlaying>
                         width: 40,
                       ),
                       IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            setState(() {
+                              allDbSongs.shuffle();
+                              isShuffle = true;
+                            });
+                          },
                           icon: const Icon(
                             Icons.shuffle,
                             color: Colors.grey,
@@ -293,7 +336,6 @@ class _NowPlayingState extends State<NowPlaying>
     if (!player.isPlaying.value) {
       iconController.forward();
       player.play();
-      // player.open(Audio.file(dbsongs[index].songurl!), showNotification: true);
     } else {
       iconController.reverse();
       player.pause();

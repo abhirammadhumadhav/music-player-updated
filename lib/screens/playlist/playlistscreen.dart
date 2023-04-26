@@ -84,46 +84,53 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                             height: 10,
                           ),
                           itemBuilder: (context, index) {
-                            return ListTile(
-                              onTap: () {
-                                playlistedscreen.playlistNotifier.value = index;
-                                Navigator.of(context)
-                                    .push(MaterialPageRoute(builder: (context) {
-                                  return playlistedscreen();
-                                }));
-                              },
-                              leading: IconButton(
-                                  onPressed: () {
-                                    playlistAlertBox(
-                                        context: context,
-                                        textEditingController:
-                                            textEditingController,
-                                        formGlobalKey: formGlobalKey,
-                                        indicator: 1,
-                                        playindex: index);
-                                  },
-                                  icon: const Icon(
-                                    Icons.edit,
-                                    color: Colors.red,
-                                  )),
-                              tileColor: const Color.fromARGB(255, 113, 72, 91),
-                              title: Center(
-                                child: Text(
-                                  playlistlist[index].playlistName!,
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.bold),
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ListTile(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8)),
+                                onTap: () {
+                                  playlistedscreen.playlistNotifier.value =
+                                      index;
+                                  Navigator.of(context).push(
+                                      MaterialPageRoute(builder: (context) {
+                                    return playlistedscreen();
+                                  }));
+                                },
+                                leading: IconButton(
+                                    onPressed: () {
+                                      playlistAlertBox(
+                                          context: context,
+                                          textEditingController:
+                                              textEditingController,
+                                          formGlobalKey: formGlobalKey,
+                                          indicator: 1,
+                                          playindex: index);
+                                    },
+                                    icon: const Icon(
+                                      Icons.edit,
+                                      color: Colors.blue,
+                                    )),
+                                tileColor:
+                                    const Color.fromARGB(255, 113, 72, 91),
+                                title: Center(
+                                  child: Text(
+                                    playlistlist[index].playlistName!,
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.bold),
+                                  ),
                                 ),
+                                trailing: IconButton(
+                                    onPressed: () {
+                                      playlistsongbox.deleteAt(index);
+                                    },
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                    )),
                               ),
-                              trailing: IconButton(
-                                  onPressed: () {
-                                    playlistsongbox.deleteAt(index);
-                                  },
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                  )),
                             );
                           },
                           itemCount: playlistlist.length,
@@ -147,7 +154,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('create Playlist'),
+            title: const Text('Playlist Name'),
             content: Form(
                 key: formGlobalKey,
                 child: Column(

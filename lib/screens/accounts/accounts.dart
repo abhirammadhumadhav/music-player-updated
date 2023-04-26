@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:my_project/model/dbfunction.dart';
+import 'package:my_project/screens/homescreen/homescreen.dart';
 import 'package:my_project/screens/likedsongs/likedsongs.dart';
 import 'package:my_project/screens/miniplayer/miniplayer.dart';
+import 'package:my_project/screens/mostlyplayedscreen/mostlyplayedscreen.dart';
 import 'package:my_project/screens/playlist/playlistscreen.dart';
 
 class AccountScreen extends StatelessWidget {
@@ -20,8 +23,8 @@ class AccountScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
-                children: [
-                  const Text(
+                children: const [
+                  Text(
                     'Account',
                     style: TextStyle(
                         fontSize: 25,
@@ -104,31 +107,40 @@ class AccountScreen extends StatelessWidget {
             const SizedBox(
               height: 20,
             ),
-            Row(
-              children: [
-                Container(
-                  height: 100,
-                  width: 150,
-                  color: const Color.fromARGB(255, 45, 10, 242),
-                  child: IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.download,
-                        size: 30,
-                        color: Colors.green,
-                      )),
-                ),
-                const SizedBox(
-                  width: 30,
-                ),
-                const Text(
-                  'Mostplayed',
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey),
-                ),
-              ],
+            InkWell(
+              onTap: () {
+                // checkmostplayed( id);
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return const MostlyPlayedScreen();
+                }));
+              },
+              child: Row(
+                children: [
+                  Container(
+                    height: 100,
+                    width: 150,
+                    color: const Color.fromARGB(255, 45, 10, 242),
+                    child: IconButton(
+                        onPressed: () {},
+                        icon: const Icon(
+                          Icons.download,
+                          size: 30,
+                          color: Colors.green,
+                        )),
+                  ),
+                  const SizedBox(
+                    width: 30,
+                  ),
+                  const Text(
+                    'Mostplayed',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(
               height: 20,

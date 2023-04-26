@@ -30,9 +30,8 @@ class _mainscreenState extends State<mainscreen> {
         children: screens,
       ),
       bottomNavigationBar: BottomNavigationBar(
-        
         currentIndex: currentIndex,
-        backgroundColor:Color.fromARGB(255, 9, 14, 67) ,
+        backgroundColor: Color.fromARGB(255, 9, 14, 67),
         onTap: (index) => setState(
           () => currentIndex = index,
         ),
@@ -40,27 +39,26 @@ class _mainscreenState extends State<mainscreen> {
         selectedItemColor: Colors.purple,
         unselectedItemColor: Colors.grey,
         // backgroundColor: Colors.white,
-        items: [
-          const BottomNavigationBarItem(
+        items: const [
+          BottomNavigationBarItem(
             icon: Icon(
               Icons.home_outlined,
             ),
             label: 'home',
           ),
-          const BottomNavigationBarItem(
+          BottomNavigationBarItem(
             icon: Icon(Icons.search_outlined),
             label: 'search',
           ),
-          const BottomNavigationBarItem(
+          BottomNavigationBarItem(
             icon: Icon(Icons.playlist_play),
             label: 'playlist',
           ),
-          const BottomNavigationBarItem(
+          BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'account',
           ),
         ],
-      
       ),
     );
   }

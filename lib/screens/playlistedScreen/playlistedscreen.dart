@@ -4,10 +4,12 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:my_project/model/dbfunction.dart';
 import 'package:my_project/model/playlist.dart';
+import 'package:my_project/model/recentlyPlayed.dart';
 import 'package:my_project/model/songmodel.dart';
 import 'package:my_project/screens/homescreen/homescreen.dart';
 import 'package:my_project/screens/nowplaying/nowplaying.dart';
 import 'package:my_project/screens/playlist/playlistscreen.dart';
+import 'package:my_project/screens/recentlyPlayed/recentlyPlayedscreen.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 class playlistedscreen extends StatefulWidget {
@@ -64,9 +66,11 @@ class _playlistedscreenState extends State<playlistedscreen> {
                       List<Songs> playlistsSongs =
                           playlists[listIndex].listPlaylist!;
                       if (playlistsSongs.isEmpty) {
-                        return const Text(
-                          "add songs",
-                          style: TextStyle(color: Colors.white),
+                        return Center(
+                          child: const Text(
+                            "Your playlist is empty",
+                            style: TextStyle(color: Colors.white),
+                          ),
                         );
                       } else {
                         return Expanded(
@@ -91,7 +95,20 @@ class _playlistedscreenState extends State<playlistedscreen> {
                                         NowPlaying.nowplayingindex.value =
                                             index;
                                         NowPlaying.nowplayingList.value =
-                                            playlistsong;
+                                            playlistsSongs;
+
+                                        RecentlyPlayed songs = RecentlyPlayed(
+                                            songname:
+                                                playlistsSongs[index].songname,
+                                            artist:
+                                                playlistsSongs[index].artist,
+                                            duration: int.parse(
+                                                playlistsSongs[index]
+                                                    .duration!),
+                                            songurl:
+                                                playlistsSongs[index].artist,
+                                            id: playlistsSongs[index].id);
+                                        updaterecentlyplayed(songs);
                                         Navigator.of(context).push(
                                             MaterialPageRoute(
                                                 builder: (context) {

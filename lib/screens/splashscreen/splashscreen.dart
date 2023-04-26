@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     requestStoragePermission();
-    gotoHome();
+    // gotoHome();
     super.initState();
   }
 
@@ -39,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
       }
 
       for (var element in allSongs) {
-        box.add(Songs(
+        await box.add(Songs(
             songname: element.title,
             artist: element.artist,
             duration: element.duration.toString(),
@@ -47,13 +47,16 @@ class _SplashScreenState extends State<SplashScreen> {
             songurl: element.uri));
       }
     }
-    setState(() {});
+    await Future.delayed(Duration(seconds: 5));
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) {
+      return mainscreen();
+    }));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-             backgroundColor: Color.fromARGB(255, 2, 31, 55),
+      backgroundColor: Color.fromARGB(255, 2, 31, 55),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
